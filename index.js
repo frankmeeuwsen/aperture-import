@@ -19,7 +19,7 @@ function readOPML(TheOPMLFeed){
 			request
 				.post(process.env.ApertureURL)
 				.auth(null, null, true, process.env.bearerToken)
-				.form({action: 'follow', channel: 'wjmb4ptXHVVFQA6GAbr94CLO', url: opmlFeed.subs[i].xmlurl})
+				.form({action: 'follow', channel: process.env.defaultChannel, url: opmlFeed.subs[i].xmlurl})
 				.on('response', function(response){
 					console.log("============================================");
 					// console.log ("URL: " + opmlFeed.subs[i].xmlurl + ".");
