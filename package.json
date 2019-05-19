@@ -7,5 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "davefeedread": "0.5.9",
+    "daveopml": "0.4.5",
+    "daveutils": "0.4.34",
+    "dotenv": "8.0.0",
+    "fs": "0.0.1-security",
+    "request": "2.88.0"
+  }
 }

@@ -1,15 +1,13 @@
+if (process.env.NODE_ENV !== 'production') {
+	const env = require('dotenv').config();
+  }
 const fs = require("fs");
 const request = require("request");
-const utils = require ("daveutils");
-const feedRead = require ("davefeedread");
 const opmlRead = require("daveopml");
 
 const timeOutSecs = 30;
 const opmlTestfeed = "./data/feeds.opml";
-const itemsToPostFile = "./data/itemsToPost.json";
-const itemArray = {
-	'items':[]
-};
+
 
 function readOPML(TheOPMLFeed){
 		opmlRead.readOpmlFile(TheOPMLFeed, function(opmlFeed){
@@ -18,44 +16,25 @@ function readOPML(TheOPMLFeed){
 			}
 		else {
 			for (var i = 0; i < opmlFeed.subs.length; i++) {
-				 readFeed(opmlFeed.subs[i].xmlurl);
-				}
+			request
+				.post(process.env.ApertureURL)
+				.auth(null, null, true, process.env.bearerToken)
+				.form({action: 'follow', channel: 'wjmb4ptXHVVFQA6GAbr94CLO', url: opmlFeed.subs[i].xmlurl})
+				.on('response', function(response){
+					console.log("============================================");
+					// console.log ("URL: " + opmlFeed.subs[i].xmlurl + ".");
+					console.log(response.statusCode)
+					console.log(response.statusMessage)
+					console.log("============================================");
+				})
+
+
 			}
-	});
-}
-
-function readFeed(xmlUrlFeed){
-	feedRead.parseUrl (xmlUrlFeed, timeOutSecs, function (err, theFeed) {
-	if (err) {
-		console.log (err.message);
-		}
-	else {
-		console.log("============================================");
-     console.log ("Title: " + theFeed.head.title + ".");
-     console.log("============================================");
-		for (var j = 0; j < theFeed.items.length; j++) {
-
-			// Check if an item is already in the stored array
-
-			//Loop over the rest items and store each item in the array
-				// console.log(theFeed.items [i].title,': ',theFeed.items [i].link);
-			 // itemArray.items.push({
-				//  'guid':theFeed.items [i].guid,
-				//  'title':theFeed.items [i].title,
-				//  'pubdate':theFeed.items [i].pubdate,
-				//  'link':theFeed.items [i].link,
-				//  'description':theFeed.items [i].description
-			 // })
-			 itemArray.items.push({
-				 'guid':theFeed.items [j].guid
-			 })
-			}
-			console.log(itemArray);
-			//Save the array locally
-			 // return (itemArray);
 		}
 	});
 }
+
+
 
 function removeFeed(TheFile){
 	fs.stat(TheFile, function(err,stat){
@@ -76,11 +55,5 @@ function removeFeed(TheFile){
 	//doe anders niets
 }
 
-function writeFeed(res){
-	fs.appendFileSync(itemsToPostFile,JSON.stringify(res))
-	console.log("File written");
-}
-
 // removeFeed(itemsToPostFile);
 readOPML(opmlTestfeed);
-writeFeed(itemArray);
